@@ -11,19 +11,15 @@
 #include "../../../modules/task_1/lebedev_a_monte_carlo/monte_carlo.h"
 
 lambda getUniformDistributionDensity(double lowBoundary,
-                                     double highBoundary)
-{
-    return [=] (double x) -> double
-    {
+                                     double highBoundary) {
+    return [=] (double x) -> double {
         return 1. / (highBoundary - lowBoundary);
     };
 }
 
 generator getUniformRandomValueGenerator(double lowBoundary,
-                                         double highBoundary)
-{
-    return [=] () -> double
-    {
+                                         double highBoundary) {
+    return [=] () -> double {
         return lowBoundary + (highBoundary - lowBoundary) * rand() / RAND_MAX;
     };
 }
@@ -33,8 +29,7 @@ double monteCarloIntegration(double lowBoundary,
                              int numberOfApproximations,
                              lambda integratedFunction,
                              lambda distributionDensityFunction,
-                             generator randomValueGenerator)
-{
+                             generator randomValueGenerator) {
     int size;
     int rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
@@ -46,15 +41,13 @@ double monteCarloIntegration(double lowBoundary,
     int    numberOfApproximationsForProcess = numberOfApproximations / size;
 
     int currentNumber = numberOfApproximationsForProcess;
-    if (rank < numberOfApproximations % size)
-    {
+    if (rank < numberOfApproximations % size) {
         numberOfApproximationsForProcess++;
     }
 
     double localSum = 0.;
 
-    for (int i = 0; i < numberOfApproximationsForProcess; i++)
-    {
+    for (int i = 0; i < numberOfApproximationsForProcess; i++) {
         double x = randomValueGenerator();
 
         localSum += integratedFunction(x) / distributionDensityFunction(x);
@@ -68,12 +61,11 @@ double monteCarloIntegration(double lowBoundary,
 double monteCarloIntegration(double lowBoundary,
                              double highBoundary,
                              int numberOfApproximations,
-                             lambda integratedFunction)
-{
+                             lambda integratedFunction) {
     return monteCarloIntegration(lowBoundary,
                                  highBoundary,
                                  numberOfApproximations,
                                  integratedFunction,
                                  getUniformDistributionDensity(lowBoundary, highBoundary),
-                                 getUniformRandomValueGenerator(lowBoundary,highBoundary));
+                                 getUniformRandomValueGenerator(lowBoundary, highBoundary));
 }

@@ -2,16 +2,15 @@
 
 #include <gtest-mpi-listener.hpp>
 #include <gtest/gtest.h>
-#include <vector>
 #include <math.h>
+#include <vector>
 #include "../../../modules/task_1/lebedev_a_monte_carlo/monte_carlo.h"
 
 TEST(monte_carlo_MPI, test1) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    lambda integratedFunction = [] (double x) -> double
-            {
+    lambda integratedFunction = [] (double x) -> double {
                 return cos(x) * tanh(x) / (x * x);
             };
 
@@ -29,8 +28,7 @@ TEST(monte_carlo_MPI, test2) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    lambda integratedFunction = [] (double x) -> double
-    {
+    lambda integratedFunction = [] (double x) -> double {
         return cos(x);
     };
 
@@ -49,8 +47,7 @@ TEST(monte_carlo_MPI, test3) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    lambda integratedFunction = [] (double x) -> double
-    {
+    lambda integratedFunction = [] (double x) -> double {
         return x * x * x * 10 + x * x + 2.4;
     };
 
@@ -68,15 +65,14 @@ TEST(monte_carlo_MPI, test4) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    lambda integratedFunction = [] (double x) -> double
-    {
+    lambda integratedFunction = [] (double x) -> double {
         return x * x + 15 * x;
     };
 
     double expectedValue = 83.33333;
     double eps           = 0.1;
 
-    double receivedValue = monteCarloIntegration(-20., -10., 10000000, integratedFunction);
+    double receivedValue = monteCarloIntegration(-20., -10., 100000, integratedFunction);
 
     if (rank == 0) {
         EXPECT_TRUE(abs(receivedValue - expectedValue) < eps);

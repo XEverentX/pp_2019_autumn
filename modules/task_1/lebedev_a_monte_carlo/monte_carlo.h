@@ -1,6 +1,6 @@
 // Copyright 2019 Lebedev Alexander
-#ifndef MODULES_TASK_1_LEBEDEV_A_MONTE_CARLO_H_
-#define MODULES_TASK_1_LEBEDEV_A_MONTE_CARLO_H_
+#ifndef MODULES_TASK_1_LEBEDEV_A_MONTE_CARLO_MONTE_CARLO_H_
+#define MODULES_TASK_1_LEBEDEV_A_MONTE_CARLO_MONTE_CARLO_H_
 
 #include <vector>
 #include <functional>
@@ -26,4 +26,4 @@ double monteCarloIntegration(double lowBoundary,
                              int numberOfApproximations,
                              lambda integratedFunction);
 
-#endif  // MODULES_TASK_1_LEBEDEV_A_MONTE_CARLO_H_
+#endif  // MODULES_TASK_1_LEBEDEV_A_MONTE_CARLO_MONTE_CARLO_H_
