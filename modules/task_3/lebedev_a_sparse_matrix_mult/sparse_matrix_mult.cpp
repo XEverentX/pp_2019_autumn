@@ -82,7 +82,7 @@ ccsMatrix generateRandomMatrix(int n, int lowerBound, int upperBound) {
         result.offset.push_back(result.offset[i] + count);
         std::set<int> indexes;
 
-        while (indexes.size() != count) {
+        while (static_cast<int>(indexes.size()) != count) {
             indexes.insert(cntGen(rnd));
         }
         for (auto x : indexes) {
@@ -151,7 +151,6 @@ ccsMatrix sparseMatrixMultParallel(ccsMatrix A, ccsMatrix B, double eps, MPI_Com
     ccsMatrix           result;
     int                 elementsPerProc = n / size;
     int                 elementsCurProc = elementsPerProc + (rank == size - 1 ? n % size : 0);
-    int                 blockSize       = 0;
     int                 currBOffsetLen  = 0;
     int                 currBValueLen   = 0;
     int                 currBIndexLen   = 0;

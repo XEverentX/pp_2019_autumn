@@ -8,6 +8,11 @@
 #include <random>
 
 struct ccsMatrix {
+    std::vector<double> value;
+    std::vector<int>    index;
+    std::vector<int>    offset;
+    int                 n;
+
     ccsMatrix() = default;
 
     ccsMatrix(int nn, std::vector<double> val, std::vector<int> ind, std::vector<int> offs);
@@ -22,10 +27,7 @@ struct ccsMatrix {
 
     friend bool operator ==(const ccsMatrix& x, const ccsMatrix& y);
 
-    std::vector<double> value;
-    std::vector<int>    index;
-    std::vector<int>    offset;
-    int                 n;
+    ~ccsMatrix() = default;
 };
 
 ccsMatrix generateRandomMatrix(int n, int lowerBound = -1000., int upperBound = 1000.);
