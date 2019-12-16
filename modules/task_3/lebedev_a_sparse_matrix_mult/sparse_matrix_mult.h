@@ -8,10 +8,10 @@
 #include <random>
 
 struct ccsMatrix {
+    int                 n;
     std::vector<double> value;
     std::vector<int>    index;
     std::vector<int>    offset;
-    int                 n;
 
     ccsMatrix() = default;
 
