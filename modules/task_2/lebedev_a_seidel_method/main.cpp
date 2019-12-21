@@ -10,16 +10,16 @@ TEST(Seqential_Seidel, Test_Light_Matrix) {
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    matrix a;
+    std::vector<double> a;
     std::vector<double> b;
 
     if (rank == 0) {
-        a.init(n, n);
+        a.resize(n * n);
         b.resize(n);
 
-        a[0][0] = 10; a[0][1] = 1; a[0][2] = 1;
-        a[1][0] = 2; a[1][1] = 10; a[1][2] = 1;
-        a[2][0] = 2; a[2][1] = 2; a[2][2] = 10;
+        a[0] = 10; a[1] = 1; a[2] = 1;
+        a[3] = 2; a[4] = 10; a[5] = 1;
+        a[6] = 2; a[7] = 2; a[8] = 10;
 
         b[0] = 12; b[1] = 13; b[2] = 14;
     }
@@ -45,19 +45,20 @@ TEST(Parallel_Seidel, Test_Light_Matrix) {
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    matrix a;
+    std::vector<double> a;
     std::vector<double> b;
 
     if (rank == 0) {
-        a.init(n, n);
+        a.resize(n * n);
         b.resize(n);
 
-        a[0][0] = 10; a[0][1] = 1; a[0][2] = 1;
-        a[1][0] = 2; a[1][1] = 10; a[1][2] = 1;
-        a[2][0] = 2; a[2][1] = 2; a[2][2] = 10;
+        a[0] = 10; a[1] = 1; a[2] = 1;
+        a[3] = 2; a[4] = 10; a[5] = 1;
+        a[6] = 2; a[7] = 2; a[8] = 10;
 
         b[0] = 12; b[1] = 13; b[2] = 14;
     }
+
     double eps = 0.00001;
     bool bad = false;
 
@@ -77,11 +78,11 @@ TEST(Parallel_Seidel_MPI, Test_check_Parallel_and_Seq_on_Rand_3) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    matrix a;
+    std::vector<double> a;
     std::vector<double> b;
 
     if (rank == 0) {
-        a.init(getRandomMatrix(n));
+        a = getRandomMatrix(n);
         b = getRandomVector(n);
     }
 
@@ -113,11 +114,11 @@ TEST(Parallel_Seidel_MPI, Test_check_Parallel_and_Seq_on_Rand_6) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    matrix a;
+    std::vector<double> a;
     std::vector<double> b;
 
     if (rank == 0) {
-        a.init(getRandomMatrix(n));
+        a = getRandomMatrix(n);
         b = getRandomVector(n);
     }
 
@@ -149,11 +150,11 @@ TEST(Parallel_Seidel_MPI, Test_check_Parallel_and_Seq_on_Rand_10) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    matrix a;
+    std::vector<double> a;
     std::vector<double> b;
 
     if (rank == 0) {
-        a.init(getRandomMatrix(n));
+        a = getRandomMatrix(n);
         b = getRandomVector(n);
     }
 

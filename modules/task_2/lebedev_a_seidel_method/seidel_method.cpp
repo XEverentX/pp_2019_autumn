@@ -21,31 +21,31 @@ std::vector<double> getRandomVector(int n, int lowerBound, int upperBound) {
     return result;
 }
 
-matrix getRandomMatrix(int n, int lowerBound, int upperBound) {
+std::vector<double> getRandomMatrix(int n, int lowerBound, int upperBound) {
     std::random_device rd;
     std::mt19937 rnd(rd());
     std::uniform_int_distribution<int> gen(lowerBound, upperBound);
 
-    matrix result(n);
+    std::vector<double> result(n * n);
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            result[i][j] = gen(rnd);
+            result[i * n + j] = gen(rnd);
         }
     }
     return result;
 }
 
-double vectorNorm(const std::vector<double> &v) {
-    double result = 0.0;
-    for (auto x : v) {
-        result += x * x;
+void transpanent(std::vector<double> &v, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            std::swap(v[i * n + j], v[j * n + i]);
+        }
     }
-    return sqrt(result);
 }
 
-// solve Ax = b, there A is a coefficientsMatrix and b is a freeMembersVector
-std::vector<double> solveSequentialSeidel(matrix a,
+// solve Ax = b, there A is a coefficientsstd::vector<double> and b is a freeMembersVector
+std::vector<double> solveSequentialSeidel(std::vector<double> a,
                                           std::vector<double> b,
                                           double eps,
                                           int approximationsCount) {
@@ -58,14 +58,14 @@ std::vector<double> solveSequentialSeidel(matrix a,
             double currentSum = b[i];
 
             for (int j = 0; j < i; j++) {
-                currentSum -= a[i][j] * x[j];
+                currentSum -= a[i * n + j] * x[j];
             }
 
             for (int j = i + 1; j < n; j++) {
-                currentSum -= a[i][j] * x[j];
+                currentSum -= a[i * n + j] * x[j];
             }
 
-            double newX = currentSum / a[i][i];
+            double newX = currentSum / a[i* n + i];
             currEps = std::max(std::fabs(newX - x[i]), currEps);
             x[i] = newX;
         }
@@ -74,8 +74,8 @@ std::vector<double> solveSequentialSeidel(matrix a,
     return x;
 }
 
-// solve in parallel Ax = b, there A is a coefficientsMatrix and b is a freeMembersVector
-std::vector<double> solveParallelSeidel(matrix a,
+// solve in parallel Ax = b, there A is a coefficientsstd::vector<double> and b is a freeMembersVector
+std::vector<double> solveParallelSeidel(std::vector<double> a,
                                         std::vector<double> b,
                                         double eps,
                                         int approximationsCount,
@@ -106,38 +106,37 @@ std::vector<double> solveParallelSeidel(matrix a,
 
     std::vector<double> x;
     std::vector<double> currX(elementsCount);
-    matrix              currA(elementsCount, n);
-
+    std::vector<double> currA(elementsCount * n);
 
     // Init data on all Proc
     if (rank == root) {
         x.resize(n);
-        a.transpanent();
+        transpanent(a, n);
 
         for (int pr = 1; pr < size; pr++) {
             int startIndex = elementsPerBlock * pr;
             int destCount  = (pr == size - 1 ? remainElements : elementsPerBlock);
             if (destCount) {
-                MPI_Send(a[startIndex], destCount * n, MPI_DOUBLE, pr, tag, comm);
+                MPI_Send(&a[startIndex * n], destCount * n, MPI_DOUBLE, pr, tag, comm);
             }
         }
         if (elementsCount) {
-            currA.v.assign(a.v.begin(), (a.v.begin() + n * elementsCount));
+            currA.assign(a.begin(), (a.begin() + n * elementsCount));
         }
     } else {
         if (elementsCount) {
-            MPI_Recv(currA[0], elementsCount * n, MPI_DOUBLE, root, tag, comm, MPI_STATUS_IGNORE);
+            MPI_Recv(&currA[0], elementsCount * n, MPI_DOUBLE, root, tag, comm, MPI_STATUS_IGNORE);
         }
     }
-
-    // // Execution parth
+    
+    // Execution parth
     do {
         indexOfProces = (size <= n ? 0 : size - 1);
         for (int i = 0; i < n; i++) {
             currSum = 0.;
             globSum = 0.;
             for (int j = 0; j < elementsCount; j++) {
-                currSum -= currA[j][i] * currX[j];
+                currSum -= currA[j * n + i] * currX[j];
             }
 
             MPI_Reduce(&currSum, &globSum, 1, MPI_DOUBLE, MPI_SUM, root, comm);
@@ -145,7 +144,7 @@ std::vector<double> solveParallelSeidel(matrix a,
             int indexOfElement = i - indexOfProces * elementsPerBlock;
 
             if (rank == root) {
-                auto newX = (b[i] + globSum + x[i] * a[i][i]) / a[i][i];
+                auto newX = (b[i] + globSum + x[i] * a[i * n + i]) / a[i * n + i];
                 currEps = std::max(std::fabs(newX - x[i]), currEps);
                 x[i] = newX;
             }
