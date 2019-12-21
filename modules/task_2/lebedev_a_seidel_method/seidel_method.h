@@ -6,8 +6,6 @@
 #include <utility>
 #include <cmath>
 
-void transpanent(std::vector<double> &v, int n);
-
 std::vector<double> getRandomVector(int n, int lowerBound = 0, int upperBound = 10);
 
 std::vector<double> getRandomMatrix(int n, int lowerBound = 0, int upperBound = 10);

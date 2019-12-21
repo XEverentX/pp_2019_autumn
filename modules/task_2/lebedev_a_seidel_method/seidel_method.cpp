@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <utility>
 #include "../../../modules/task_2/lebedev_a_seidel_method/seidel_method.h"
 
 std::vector<double> getRandomVector(int n, int lowerBound, int upperBound) {
@@ -34,14 +35,6 @@ std::vector<double> getRandomMatrix(int n, int lowerBound, int upperBound) {
         }
     }
     return result;
-}
-
-void transpanent(std::vector<double> &v, int n) {
-    for (int i = 0; i < n; i++) {
-        for (int j = i + 1; j < n; j++) {
-            std::swap(v[i * n + j], v[j * n + i]);
-        }
-    }
 }
 
 // solve Ax = b, there A is a coefficientsstd::vector<double> and b is a freeMembersVector
@@ -111,7 +104,12 @@ std::vector<double> solveParallelSeidel(std::vector<double> a,
     // Init data on all Proc
     if (rank == root) {
         x.resize(n);
-        transpanent(a, n);
+        // Transpanent
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                std::swap(a[i * n + j], a[j * n + i]);
+            }
+    }
 
         for (int pr = 1; pr < size; pr++) {
             int startIndex = elementsPerBlock * pr;
@@ -128,7 +126,6 @@ std::vector<double> solveParallelSeidel(std::vector<double> a,
             MPI_Recv(&currA[0], elementsCount * n, MPI_DOUBLE, root, tag, comm, MPI_STATUS_IGNORE);
         }
     }
-    
     // Execution parth
     do {
         indexOfProces = (size <= n ? 0 : size - 1);
