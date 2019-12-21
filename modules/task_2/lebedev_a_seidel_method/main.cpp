@@ -102,6 +102,7 @@ TEST(Parallel_Seidel_MPI, Test_check_Parallel_and_Seq_on_Rand_3) {
 
             if (std::fabs(l1 - l2) > eps) {
                 bad = true;
+                std::cerr << l2 << ' ' << l1 << std::endl;
             }
         }
         EXPECT_EQ(bad, false);
