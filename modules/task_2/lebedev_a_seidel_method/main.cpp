@@ -179,6 +179,51 @@ TEST(Parallel_Seidel_MPI, Test_check_Parallel_and_Seq_on_Rand_10) {
     }
 }
 
+TEST(Parallel_Seidel_MPI, Test_check_Parallel_and_Seq_on_Rand_1000) {
+    int n = 1000;
+
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    matrix a;
+    std::vector<double> b;
+
+    if (rank == 0) {
+        a.init(getRandomMatrix(n));
+        b = getRandomVector(n);
+    }
+
+    double eps = 0.00001;
+    bool bad = false;
+
+    std::vector<double> resultSequential;
+
+    double sequentialTime = 0.;
+
+    double parallelTime = MPI_Wtime(); 
+    std::vector<double> resultParallel = solveParallelSeidel(a, b, eps);
+    parallelTime = MPI_Wtime() - parallelTime;
+
+    if (rank == 0) {
+        sequentialTime = MPI_Wtime();
+        resultSequential = solveSequentialSeidel(a, b, eps);
+        sequentialTime = MPI_Wtime() - sequentialTime;
+    }
+
+    if (rank == 0) {
+        std::cerr << "Sequantial Time: " << sequentialTime << " | ParallelTime: " << parallelTime << "\n";
+        for (int i = 0; i < n; i++) {
+            double l1 = static_cast<int>(resultParallel[i] * 1000000) / 1000000;
+            double l2 = static_cast<int>(resultSequential[i] * 1000000) / 1000000;
+
+            if (std::fabs(l1 - l2) > eps) {
+                bad = true;
+            }
+        }
+        EXPECT_EQ(bad, false);
+    }
+}
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     MPI_Init(&argc, &argv);
