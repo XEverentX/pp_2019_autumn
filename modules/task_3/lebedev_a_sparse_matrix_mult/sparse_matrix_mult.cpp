@@ -143,11 +143,11 @@ ccsMatrix sparseMatrixMultParallel(ccsMatrix A, ccsMatrix B, double eps, MPI_Com
 
     int size = commSize;
 
-    std::vector<double> currAValue(2 * n);
-    std::vector<double> currBValue(2 * n);
-    std::vector<int>    currAIndex(2 * n);
-    std::vector<int>    currBIndex(2 * n);
-    std::vector<int>    currBOffset(2 * n);
+    std::vector<double> currAValue(n * n);
+    std::vector<double> currBValue(n * n);
+    std::vector<int>    currAIndex(n * n);
+    std::vector<int>    currBIndex(n * n);
+    std::vector<int>    currBOffset(n * n);
     ccsMatrix           result;
     int                 elementsPerProc = n / size;
     int                 elementsCurProc = elementsPerProc + (rank == size - 1 ? n % size : 0);

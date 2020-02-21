@@ -164,7 +164,7 @@ TEST(sparse_matrix_mult, parallel_and_sequential_test_n_15) {
     int root = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int n = 15;
+    int n = 150;
 
     ccsMatrix a;
     ccsMatrix b;
