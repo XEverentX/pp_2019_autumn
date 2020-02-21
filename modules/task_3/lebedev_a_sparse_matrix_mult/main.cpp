@@ -159,7 +159,7 @@ TEST(sparse_matrix_mult, parallel_and_sequential_test_n_10) {
     }
 }
 
-TEST(sparse_matrix_mult, parallel_and_sequential_test_n_15) {
+TEST(sparse_matrix_mult, parallel_and_sequential_test_n_150) {
     int rank;
     int root = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -171,16 +171,24 @@ TEST(sparse_matrix_mult, parallel_and_sequential_test_n_15) {
     ccsMatrix copyA;
     ccsMatrix expected;
 
+    double parallelTime  = 0.;
+    double seqantialTime = 0.;
+
     if (rank == root) {
         a.init(generateRandomMatrix(n));
         copyA.init(a);
         b.init(generateRandomMatrix(n));
+        seqantialTime = MPI_Wtime();
         expected.init(sparseMatrixMultSequential(a, b));
+        seqantialTime = MPI_Wtime() - seqantialTime;
     }
 
+    parallelTime = MPI_Wtime();
     ccsMatrix result = sparseMatrixMultParallel(copyA, b);
+    parallelTime = MPI_Wtime() - parallelTime;
 
     if (rank == root) {
+        std::cerr << "SeqantialTime: " << seqantialTime << " | ParallelTime: " << parallelTime << std::endl;
         ASSERT_EQ(result, expected);
     }
 }
