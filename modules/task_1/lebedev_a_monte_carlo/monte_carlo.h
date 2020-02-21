@@ -6,20 +6,15 @@
 #include <functional>
 
 using lambda = std::function<double(double)>;
-using generator = std::function<double()>;
 
 lambda getUniformDistributionDensity(double lowBoundary,
                                      double highBoundary);
-
-generator getUniformRandomValueGenerator(double lowBoundary,
-                                         double highBoundary);
 
 double monteCarloIntegration(double lowBoundary,
                              double highBoundary,
                              int numberOfApproximations,
                              lambda integratedFunction,
-                             lambda distributionDensityFunction,
-                             generator randomValueGenerator);
+                             lambda distributionDensityFunction);
 
 double monteCarloIntegration(double lowBoundary,
                              double highBoundary,

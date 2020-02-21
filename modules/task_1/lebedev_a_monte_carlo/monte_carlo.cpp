@@ -17,25 +17,19 @@ lambda getUniformDistributionDensity(double lowBoundary,
     };
 }
 
-generator getUniformRandomValueGenerator(double lowBoundary,
-                                         double highBoundary) {
-    return [=] () -> double {
-        return lowBoundary + (highBoundary - lowBoundary) * rand() / RAND_MAX;
-    };
-}
-
 double monteCarloIntegration(double lowBoundary,
                              double highBoundary,
                              int numberOfApproximations,
                              lambda integratedFunction,
-                             lambda distributionDensityFunction,
-                             generator randomValueGenerator) {
+                             lambda distributionDensityFunction) {
     int size;
     int rank;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    srand(time(NULL));
+    std::random_device rd;
+    std::mt19937 rnd(rd());
+    std::uniform_real_distribution<double> getRand(lowBoundary, highBoundary);
 
     double integrationResult                = 0.;
     int    numberOfApproximationsForProcess = numberOfApproximations / size;
@@ -48,7 +42,7 @@ double monteCarloIntegration(double lowBoundary,
     double localSum = 0.;
 
     for (int i = 0; i < numberOfApproximationsForProcess; i++) {
-        double x = randomValueGenerator();
+        double x = getRand(rnd);
 
         localSum += integratedFunction(x) / distributionDensityFunction(x);
     }
@@ -66,6 +60,5 @@ double monteCarloIntegration(double lowBoundary,
                                  highBoundary,
                                  numberOfApproximations,
                                  integratedFunction,
-                                 getUniformDistributionDensity(lowBoundary, highBoundary),
-                                 getUniformRandomValueGenerator(lowBoundary, highBoundary));
+                                 getUniformDistributionDensity(lowBoundary, highBoundary));
 }
