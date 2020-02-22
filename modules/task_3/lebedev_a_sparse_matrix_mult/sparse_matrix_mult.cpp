@@ -250,8 +250,8 @@ ccsMatrix sparseMatrixMultParallel(ccsMatrix A, ccsMatrix B, double eps, MPI_Com
                     MPI_Send(&currentResIndex[0], len, MPI_INT, root, 0, comm);
                 }
             } else {
-                std::vector<double> getterValue(2 * n);
-                std::vector<int>    getterIndex(2 * n);
+                std::vector<double> getterValue(n * n);
+                std::vector<int>    getterIndex(n * n);
 
                 int counter = 0;
                 int len = currentResult.size();
